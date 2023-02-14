@@ -1,7 +1,11 @@
 const textarea = document.getElementById('textarea');
 const lineNumbers = document.getElementById('line-numbers');
 
-const endpoint = 'ws://' + window.location.host + '/sync';
+let endpoint = 'ws://' + window.location.host + '/sync';
+if (window.location.protocol === 'https:') {
+    endpoint = 'wss://' + window.location.host + '/sync';
+}
+
 const ws = new WebSocket(endpoint);
 
 ws.onmessage = event => {
