@@ -17,6 +17,7 @@ ws.onopen = event => {
 
 ws.onerror = event => {
     console.log('Error connecting to server');
+    alert(event)
 }
 
 textarea.addEventListener('keyup', event=> {

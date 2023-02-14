@@ -4,16 +4,37 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, filepath.Join("static", r.URL.Path))
-	})
-
 	hub := NewHub()
 	go hub.run()
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		reqFilePath := filepath.Join("static", r.URL.Path)
+		if reqFilePath == "static" {
+			reqFilePath = "static/index.html"
+		}
+		log.Println(reqFilePath)
+		reqFileBytes, err := os.ReadFile(reqFilePath)
+		if err != nil {
+			log.Printf("error: %v", err)
+			http.Error(w, "404 not found", http.StatusNotFound)
+			return
+		}
+		if reqFilePath == "static/index.html" {
+			reqFileText := string(reqFileBytes)
+			reqFileText = strings.ReplaceAll(reqFileText, "{{}}", hub.getCurrText())
+			reqFileBytes = []byte(reqFileText)
+			w.Write(reqFileBytes)
+		} else {
+			http.ServeFile(w, r, filepath.Join("static", r.URL.Path))
+		}
+	})
+
 	http.HandleFunc("/sync", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})

@@ -1,10 +1,14 @@
 package main
 
+import "sync"
+
 type Hub struct {
 	clients    map[*Client]bool
 	broadcast  chan string
 	register   chan *Client
 	unregister chan *Client
+	currText   string
+	textMutex  sync.Mutex
 }
 
 func NewHub() *Hub {
@@ -14,6 +18,12 @@ func NewHub() *Hub {
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
 	}
+}
+
+func (h *Hub) getCurrText() string {
+	h.textMutex.Lock()
+	defer h.textMutex.Unlock()
+	return h.currText
 }
 
 func (h *Hub) run() {
@@ -27,6 +37,9 @@ func (h *Hub) run() {
 				close(client.send)
 			}
 		case message := <-h.broadcast:
+			h.textMutex.Lock()
+			h.currText = message
+			h.textMutex.Unlock()
 			for client := range h.clients {
 				select {
 				case client.send <- message:
