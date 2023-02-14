@@ -1,0 +1,51 @@
+* {
+    box-sizing: border-box;
+}
+
+#editor {
+    width: 100%;
+    height: 100vh;
+    padding: 1rem;
+    display: flex;
+}
+
+#line-numbers {
+    width: 2rem;
+    text-align: right;
+    padding-right: 0.5rem;
+    line-height:20px;
+    border: black 1px solid;
+    border-right: 0;
+    padding-top: 0.1rem;
+    font-size: 16px;
+    font-family:monospace;
+    font-weight:bold;
+}
+
+#line-numbers span {
+    counter-increment: linenumber;
+}
+
+#line-numbers span::before {
+    content: counter(linenumber);
+    display: block;
+    color: black;
+}
+
+#textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    line-height:20px;
+    border: black 1px solid;
+    padding: 0;
+    padding-left: 0.5rem;
+    font-family: monospace;
+    font-size: 16px;
+    padding-top: 0.1rem;
+}
+
+body{
+    padding: 0;
+    margin: 0;
+}
